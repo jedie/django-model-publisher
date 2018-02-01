@@ -269,6 +269,10 @@ history
 
 * *dev* `compare v0.6.8...master <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master>`_
 
+* v0.6.9 - 01.02.2018 - `compare v0.6.8...v0.6.9 <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...v0.6.9>`_ 
+
+    * Bugfix ``AttributeError: 'PublisherPageToolbar' object has no attribute 'current_request'`` if superuser edit a cms page
+
 * v0.6.8 - 01.02.2018 - `compare v0.6.7...v0.6.8 <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.7...v0.6.8>`_ 
 
     * Fix `#9 Redirect after "request publishing" <https://github.com/wearehoods/django-ya-model-publisher/issues/9>`_
