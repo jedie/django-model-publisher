@@ -90,8 +90,9 @@ class PublisherPageToolbar(PageToolbar):
         """
         response = super(PublisherPageToolbar, self).request_hook()
 
-        user = self.request.user
+        self.current_request = None
 
+        user = self.request.user
         if user.is_superuser:
             log.debug("Don't modify cms toolbar for superusers")
             return response
@@ -103,8 +104,6 @@ class PublisherPageToolbar(PageToolbar):
             # e.g.: anonymous user should not see any messages
             log.debug("Don't modify cms toolbar for current user %s", self.request.user)
             return response
-
-        self.current_request = None
 
         page = get_page_draft(self.request.current_page)
         if page is None:

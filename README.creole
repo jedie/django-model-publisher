@@ -208,6 +208,7 @@ Please read the information above.
 == history
 
 * *dev* [[https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master|compare v0.6.8...master]]
+** Bugfix {{{AttributeError: 'PublisherPageToolbar' object has no attribute 'current_request'}}} if superuser edit a cms page
 * v0.6.8 - 01.02.2018 - [[https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.7...v0.6.8|compare v0.6.7...v0.6.8]]
 ** Fix [[https://github.com/wearehoods/django-ya-model-publisher/issues/9|#9 Redirect after "request publishing"]]
 ** Add reply/history Links in Django CMS Toolbar (specially for page with pending requests)

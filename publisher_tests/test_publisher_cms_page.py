@@ -154,6 +154,44 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
             html=True
         )
 
+    def test_superuser_edit_unchanged_page(self):
+        self.login_superuser()
+
+        self.assertEqual(self.page4edit.is_dirty(language="en"), False)
+
+        response = self.client.get(
+            "%s?edit" % self.page4edit_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        # debug_response(response)
+
+        # 'editor' user can accept/reject un-/publish requests:
+
+        self.assertResponse(response,
+            must_contain=(
+                "django-ya-model-publisher", "Test page 1 in English",
+
+                "is draft: true",
+                "is dirty: false",
+
+                "Logout superuser",
+                "Double-click to edit",
+            ),
+            must_not_contain=(
+                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request unpublishing</a>
+                "/request_unpublish/", "Request unpublishing",
+
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
+                "/request_publish/", "Request publishing",
+
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="cms/base.html",
+            html=False,
+        )
+
     def test_reporter_edit_dirty_page(self):
         self.login_reporter_user() # can create un-/publish requests
 
