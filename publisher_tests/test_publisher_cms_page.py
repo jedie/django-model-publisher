@@ -103,6 +103,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Error", "Traceback",
             ),
             status_code=200,
+            messages=[],
             template_name="cms/base.html",
             html=False,
         )
@@ -137,6 +138,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Error", "Traceback",
             ),
             status_code=200,
+            messages=[],
             template_name="cms/base.html",
             html=False,
         )
@@ -228,6 +230,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Error", "Traceback",
             ),
             status_code=200,
+            messages=[],
             template_name="cms/base.html",
             html=False,
         )
@@ -302,6 +305,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
             ),
             must_not_contain=("Error", "Traceback"),
             status_code=200,
+            messages=[],
             template_name="publisher/publisher_requests.html",
             html=False,
         )
@@ -520,6 +524,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
             ),
             must_not_contain=("Error", "Traceback"),
             status_code=200,
+            messages=[],
             template_name="publisher/publisher_requests.html",
             html=False,
         )
@@ -637,6 +642,7 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Error", "Traceback"
             ),
             status_code=200,
+            messages=[],
             template_name="publisher/publisher_requests.html",
             html=False,
         )
