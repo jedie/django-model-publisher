@@ -21,7 +21,7 @@ class PublisherQuerySet(models.QuerySet):
     def drafts(self):
         return self.filter(publisher_is_draft=True)
 
-    def published(self):
+    def published(self): # TODO: Should be "renamed" to public() as in Django-CMS Page model
         """
         Note: will ignore start/end date!
         Use self.visible() to get all publicly accessible entries.
