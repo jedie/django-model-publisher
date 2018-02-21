@@ -22,6 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_tools.permissions import check_permission
 
 from publisher import constants
+
 from publisher.forms import PublisherForm, PublisherNoteForm, PublisherParlerForm
 from publisher.models import PublisherStateModel
 from publisher.permissions import can_publish_object, has_object_permission

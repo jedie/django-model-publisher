@@ -17,6 +17,11 @@ class AdminLoggedinTests(ClientBaseTestCase):
     """
     Some basics test with the django admin
     """
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        PublisherStateModel.objects.all().delete()
+
     def assert_can_access_statemodel_index(self, username):
         def raise_error(*args, **kwargs):
             tb = sys.exc_info()[2]

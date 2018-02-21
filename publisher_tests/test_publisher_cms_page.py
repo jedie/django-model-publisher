@@ -40,6 +40,11 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
     """
     Publisher workflow for CMS pages
     """
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        PublisherStateModel.objects.all().delete()
+
     def setUp(self):
         super(CmsPagePublisherWorkflowTests, self).setUp()
 
@@ -67,6 +72,8 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
 
         self.assertEqual(str(self.page4edit_title), "Test page 1 in English (test-page-1-in-english, en)")
 
+        self.assertEqual(PublisherStateModel.objects.all().count(), 0)
+
         # self.assertEqual(self.parent_page4edit_url, "/en/XXX/")
         # self.assertEqual(self.parent_page4edit.get_title(language="en"), "XXX")
         # self.assertEqual(self.parent_page4edit.publisher_is_draft, True)
@@ -90,15 +97,15 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Logout reporter",
                 "Double-click to edit",
 
-                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request unpublishing</a>
-                "/request_unpublish/", "Request unpublishing",
+                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request page unpublishing</a>
+                "/request_unpublish/", "Request page unpublishing",
             ),
             must_not_contain=(
                 # <a href="/en/admin/cms/page/670/en/publish/"...>Publish page changes</a>
                 "/publish/", "Publish page changes",
 
-                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
-                "/request_publish/", "Request publishing",
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request page publishing</a>
+                "/request_publish/", "Request page publishing",
 
                 "Error", "Traceback",
             ),
@@ -129,11 +136,11 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Double-click to edit",
             ),
             must_not_contain=(
-                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request unpublishing</a>
-                "/request_unpublish/", "Request unpublishing",
+                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request page unpublishing</a>
+                "/request_unpublish/", "Request page unpublishing",
 
-                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
-                "/request_publish/", "Request publishing",
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request page publishing</a>
+                "/request_publish/", "Request page publishing",
 
                 "Error", "Traceback",
             ),
@@ -180,11 +187,11 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Double-click to edit",
             ),
             must_not_contain=(
-                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request unpublishing</a>
-                "/request_unpublish/", "Request unpublishing",
+                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request page unpublishing</a>
+                "/request_unpublish/", "Request page unpublishing",
 
-                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
-                "/request_publish/", "Request publishing",
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request page publishing</a>
+                "/request_publish/", "Request page publishing",
 
                 "Error", "Traceback",
             ),
@@ -217,11 +224,11 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "Logout reporter",
                 "Double-click to edit",
 
-                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
-                "/request_publish/", "Request publishing",
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request page publishing</a>
+                "/request_publish/", "Request page publishing",
 
-                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request unpublishing</a>
-                "/request_unpublish/", "Request unpublishing",
+                # <a href="/en/admin/publisher/publisherstatemodel/2/23/request_unpublish/"...>Request page unpublishing</a>
+                "/request_unpublish/", "Request page unpublishing",
             ),
             must_not_contain=(
                 # <a href="/en/admin/cms/page/670/en/publish/"...>Publish page changes</a>
@@ -781,8 +788,8 @@ class CmsPagePublisherWorkflowTests(CmsBaseTestCase):
                 "<title>test_new_emtpy_created_cms_page</title>",
                 "Double-click to edit",
 
-                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request publishing</a>
-                "/request_publish/", "Request publishing",
+                # <a href="/de/admin/publisher/publisherstatemodel/2/614/request_publish/"...>Request page publishing</a>
+                "/request_publish/", "Request page publishing",
             ),
             must_not_contain=("Error", "Traceback"),
             status_code=200,

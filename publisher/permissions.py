@@ -54,3 +54,11 @@ def can_publish_object(user, opts, raise_exception=True):
         action=constants.PERMISSION_CAN_PUBLISH,
         raise_exception=raise_exception
     )
+
+
+def can_publish_instance(user, publisher_instance, raise_exception=True):
+    """
+    Check if user has "<app_name>.can_publish_<model_name>" for the given "PublisherModel" instance
+    """
+    opts = publisher_instance._meta
+    return can_publish_object(user, opts, raise_exception=raise_exception)

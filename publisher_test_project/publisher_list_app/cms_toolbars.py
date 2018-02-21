@@ -11,15 +11,16 @@
 
 import logging
 
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.translation import ugettext_lazy as _
 
-from cms.toolbar_pool import toolbar_pool
 from cms.toolbar_base import CMSToolbar
+from cms.toolbar_pool import toolbar_pool
 from cms.utils.urlutils import admin_reverse
 
+from publisher_test_project.publisher_list_app.constants import (ADMIN_REVERSE_PREFIX, LIST_TOOLBAR_KEY,
+                                                                 LIST_TOOLBAR_VERBOSE_NAME)
 from publisher_test_project.publisher_list_app.models import PublisherItem
-
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class PublisherItemToolbar(CMSToolbar):
     watch_models = [PublisherItem]
 
     def populate(self):
-        menu = self.toolbar.get_or_create_menu('list_item-app', _('PublisherItems'))
+        menu = self.toolbar.get_or_create_menu(LIST_TOOLBAR_KEY, LIST_TOOLBAR_VERBOSE_NAME)
 
         try:
             url=reverse('list_item:publisher-list')
@@ -55,13 +56,13 @@ class PublisherItemToolbar(CMSToolbar):
         if change_model_perm:
             menu.add_sideframe_item(
                 name=_('PublisherItem list'),
-                url=admin_reverse('publisher_list_app_publisheritem_changelist'),
+                url=admin_reverse(ADMIN_REVERSE_PREFIX + "_changelist"),
             )
 
         if add_model_perm:
             menu.add_modal_item(
                 name=_('Add new list_item'),
-                url=admin_reverse('publisher_list_app_publisheritem_add'),
+                url=admin_reverse(ADMIN_REVERSE_PREFIX + "_add"),
             )
 
 toolbar_pool.register(PublisherItemToolbar)

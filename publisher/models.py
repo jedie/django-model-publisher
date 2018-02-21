@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import truncatewords
 from django.utils import six, timezone
@@ -14,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 # https://github.com/jedie/django-tools
 from django_tools.permissions import ModelPermissionMixin, check_permission
 
+from publisher.admin_utils import admin_url
 from publisher.permissions import can_publish_object
 
 from . import constants
@@ -318,6 +318,27 @@ class PublisherModelBase(ModelPermissionMixin, models.Model):
 
         return placeholder_fields
 
+    @assert_draft
+    def admin_change(self):
+        """
+        Return the link to the admin change view.
+        """
+        return admin_url(obj=self, name="change")
+
+    @assert_draft
+    def admin_publish_url(self):
+        """
+        Return the link to the admin view for direct publish this instance.
+        """
+        return admin_url(obj=self, name="publish")
+
+    @assert_draft
+    def admin_unpublish_url(self):
+        """
+        Return the link to the admin view for direct unpublish this instance.
+        """
+        return admin_url(obj=self, name="unpublish")
+
     _suppress_modified=False
 
     def save(self, **kwargs):
@@ -565,28 +586,16 @@ class PublisherStateModel(ModelPermissionMixin, models.Model):
         return " ".join([six.text_type(s) for s in txt])
 
     def admin_reply_url(self):
-        url = reverse(
-            "admin:publisher_publisherstatemodel_reply_request",
-            kwargs={'pk': self.pk}
-        )
-        return url
+        return admin_url(obj=self, name="reply_request")
 
     def admin_history_url(self):
-        url = reverse(
-            "admin:publisher_publisherstatemodel_history",
-            kwargs={'pk': self.pk}
-        )
-        return url
+        return admin_url(obj=self, name="history")
 
     def admin_close_deleted_url(self):
         """
         Link to 'close this deleted request'
         """
-        url = reverse(
-            "admin:publisher_publisherstatemodel_close_deleted",
-            kwargs={'pk': self.pk}
-        )
-        return url
+        return admin_url(obj=self, name="close_deleted")
 
     ############################################################################
     # response methods:

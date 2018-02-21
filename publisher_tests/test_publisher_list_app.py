@@ -29,7 +29,7 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
     """
     @classmethod
     def setUpTestData(cls):
-        super(PublisherItemAppTestCase, cls).setUpTestData()
+        super().setUpTestData()
 
         # $ ./publisher_test_project/manage.py cms_page_info application_urls application_namespace navigation_extenders
 
@@ -384,4 +384,205 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
             messages=[],
             template_name="list_app/list.html",
             html=False,
+        )
+
+    def test_toolbar_editor_direct_publish(self):
+        self.login_editor_user() # 'editor' user has 'can_publish' -> can publish and accept/reject un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.dirty_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'editor'",
+                "Publisher List App - detail view",
+                "/en/admin/publisher_list_app/publisheritem/%i/publish/" % self.dirty_item.get_draft_object().pk,
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+    def test_toolbar_editor_direct_unpublish(self):
+        self.login_editor_user() # 'editor' user has 'can_publish' -> can publish and accept/reject un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.published_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'editor'",
+                "Publisher List App - detail view",
+                "/en/admin/publisher_list_app/publisheritem/%i/unpublish/" % self.published_item.get_draft_object().pk,
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+    def test_toolbar_reporter_request_publish(self):
+        self.login_reporter_user() # 'reporter' user has not 'can_publish' -> can only create un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.dirty_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'reporter'",
+                "Publisher List App - detail view",
+                "<p>This is dirty!</p>", # the self.dirty_item content
+                "Request publishing &#39;publisher item&#39;", # Toolbar link Text
+                self.dirty_item_request_publish_url, # Toolbar link url
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+    def test_toolbar_reporter_request_unpublish(self):
+        self.login_reporter_user() # 'reporter' user has not 'can_publish' -> can only create un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.published_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'reporter'",
+                "Publisher List App - detail view",
+                "<p>Published Item</p>", # the self.published_item content
+                "Request unpublishing &#39;publisher item&#39;", # Toolbar link Text
+                self.published_item_request_unpublish_url, # Toolbar link url
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+    def test_toolbar_editor_pending_publish(self):
+        self.login_editor_user() # 'editor' user has 'can_publish' -> can publish and accept/reject un-/publish requests
+
+        current_request = PublisherStateModel.objects.get_current_request(self.pending_publish_item)
+
+        response = self.client.get(
+            "%s?edit" % self.pending_publish_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'editor'",
+                "Publisher List App - detail view",
+
+                # item content:
+                "<p>pending publish request</p>",
+
+                # toolbar link:
+                "/en/admin/publisher/publisherstatemodel/%i/reply_request/" % current_request.pk,
+                "Reply publish &#39;publisher item&#39; request",
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+    def test_toolbar_editor_pending_unpublish(self):
+        self.login_editor_user() # 'editor' user has 'can_publish' -> can publish and accept/reject un-/publish requests
+
+        current_request = PublisherStateModel.objects.get_current_request(self.pending_unpublish_item)
+
+        response = self.client.get(
+            "%s?edit" % self.pending_unpublish_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                "user 'editor'",
+                "Publisher List App - detail view",
+
+                # item content:
+                "<p>pending unpublish request</p>",
+
+                # toolbar link:
+                "/en/admin/publisher/publisherstatemodel/%i/reply_request/" % current_request.pk,
+                "Reply unpublish &#39;publisher item&#39; request",
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=False,
+        )
+
+
+    def test_toolbar_reporter_pending_publish(self):
+        self.login_reporter_user() # 'reporter' user has not 'can_publish' -> can only create un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.pending_publish_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                # item content:
+                "<p>pending publish request</p>",
+
+                # Toolbar "link":
+                '<a href="" class="cms-btn cms-btn-disabled cms-btn-action">pending publish request</a>'
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=True,
+        )
+
+    def test_toolbar_reporter_pending_unpublish(self):
+        self.login_reporter_user() # 'reporter' user has not 'can_publish' -> can only create un-/publish requests
+
+        response = self.client.get(
+            "%s?edit" % self.pending_unpublish_item_url,
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        self.assertResponse(response,
+            must_contain=(
+                # item content:
+                "<p>pending unpublish request</p>",
+
+                # Toolbar "link":
+                '<a href="" class="cms-btn cms-btn-disabled cms-btn-action">pending unpublish request</a>'
+            ),
+            must_not_contain=(
+                "Error", "Traceback",
+            ),
+            status_code=200,
+            messages=[],
+            template_name="list_app/detail.html",
+            html=True,
         )

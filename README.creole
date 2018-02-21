@@ -208,6 +208,9 @@ Please read the information above.
 == history
 
 * *dev* [[https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master|compare v0.6.8...master]]
+** backward incompatible changes: {{{PublisherCmsViewMixin, PublisherCmsDetailView, PublisherCmsListView}}} moved from {{{publisher.views}}} to {{{publisher_cms.views}}}
+** NEW: Add publish links to Django CMS toolbar in {{{PublisherCmsDetailView}}}
+** Change {{{PublisherPageToolbar}}} link text and add "page" to them (to differentiate them better from {{{PublisherCmsDetailView}}} links)
 * v0.6.9 - 01.02.2018 - [[https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...v0.6.9|compare v0.6.8...v0.6.9]]
 ** Bugfix {{{AttributeError: 'PublisherPageToolbar' object has no attribute 'current_request'}}} if superuser edit a cms page
 * v0.6.8 - 01.02.2018 - [[https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.7...v0.6.8|compare v0.6.7...v0.6.8]]

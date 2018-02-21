@@ -176,6 +176,10 @@ class PublisherPageToolbar(PageToolbar):
             self.has_publish_permission(),
         )
 
+        if self.page is None:
+            log.debug("Don't add publish buttons, because self.page is None")
+            return
+
         if self.current_request is not None:
             log.debug("Replace default 'publish page' button with 'review request' button")
             can_publish = self.current_request.check_object_publish_permission(self.request.user, raise_exception=False)
@@ -185,7 +189,7 @@ class PublisherPageToolbar(PageToolbar):
 
                 button_list = ButtonList(side=self.toolbar.RIGHT)
                 button_list.add_button(
-                    name=_("Reply publish request"),
+                    name=_("Reply publish page request"),
                     url=url,
                     disabled=False,
                     extra_classes=('cms-btn-action',),
@@ -241,7 +245,7 @@ class PublisherPageToolbar(PageToolbar):
             if self.is_page_dirty():
                 log.debug("Dirty: Add request button")
                 self.add_button(button_list,
-                    title=_("Request publishing"),
+                    title=_("Request page publishing"),
                     url = PublisherStateModel.objects.admin_request_publish_url(obj=self.page),
                     disabled=False
                 )
@@ -256,7 +260,7 @@ class PublisherPageToolbar(PageToolbar):
             if has_public_version:
                 log.debug("has public version: Add request unpublish button")
                 self.add_button(button_list,
-                    title=_("Request unpublishing"),
+                    title=_("Request page unpublishing"),
                     url = PublisherStateModel.objects.admin_request_unpublish_url(obj=self.page),
                     disabled=False
                 )
