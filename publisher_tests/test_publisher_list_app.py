@@ -1,12 +1,13 @@
 
 """
-    created 2017 by Jens Diemer <ya-publisher@jensdiemer.de>
+    created 2017-2018  by Jens Diemer <ya-publisher@jensdiemer.de>
 """
 
 import sys
 from unittest import mock
 
 import django
+from django.contrib.contenttypes.models import ContentType
 from django.test.utils import override_settings
 
 from cms.models import Page
@@ -47,6 +48,17 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
         cls.hidden_by_end_date_item, cls.hidden_by_end_date_item_url = get_item("hidden by end date")
         cls.dirty_item, cls.dirty_item_url = get_item("This is dirty!")
 
+        cls.pending_publish_item, cls.pending_publish_item_url = get_item("pending publish request")
+        cls.pending_unpublish_item, cls.pending_unpublish_item_url = get_item("pending unpublish request")
+
+        content_type_id = ContentType.objects.get_for_model(PublisherItem).pk
+        cls.dirty_item_request_publish_url = "/en/admin/publisher/publisherstatemodel/%i/%i/request_publish/" % (
+            content_type_id, cls.dirty_item.pk
+        )
+        cls.published_item_request_unpublish_url = "/en/admin/publisher/publisherstatemodel/%i/%i/request_unpublish/" % (
+            content_type_id, cls.published_item.pk
+        )
+
     def get_admin_change_url(self, obj):
         assert obj.publisher_is_draft == True, "%s not draft!" % obj
         url = super(PublisherItemAppTestCase, self).get_admin_change_url(obj)
@@ -58,6 +70,7 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
 
         self.assertEqual(self.not_published_item.slug, "not-published-item")
         self.assertEqual(self.not_published_item.is_published, False)
+        self.assertEqual(self.not_published_item.get_public_object(), None) # Not published
         self.assertEqual(self.not_published_item.hidden_by_end_date, False)
         self.assertEqual(self.not_published_item.hidden_by_start_date, False)
         self.assertEqual(self.not_published_item.is_visible, False)
@@ -66,6 +79,7 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
 
         self.assertEqual(self.published_item.slug, "published-item")
         self.assertEqual(self.published_item.is_published, False) # It's the draft, not the published instance
+        self.assertEqual(self.published_item.get_public_object().is_published, True)
         self.assertEqual(self.published_item.hidden_by_end_date, False)
         self.assertEqual(self.published_item.hidden_by_start_date, False)
         self.assertEqual(self.published_item.is_visible, True)
@@ -74,6 +88,7 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
 
         self.assertEqual(self.hidden_by_start_date_item.slug, "hidden-by-start-date")
         self.assertEqual(self.hidden_by_start_date_item.is_published, False)
+        self.assertEqual(self.hidden_by_start_date_item.get_public_object().is_published, True)
         self.assertEqual(self.hidden_by_start_date_item.hidden_by_end_date, False)
         self.assertEqual(self.hidden_by_start_date_item.hidden_by_start_date, True)
         self.assertEqual(self.hidden_by_start_date_item.is_visible, False)
@@ -82,6 +97,7 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
 
         self.assertEqual(self.hidden_by_end_date_item.slug, "hidden-by-end-date")
         self.assertEqual(self.hidden_by_end_date_item.is_published, False)
+        self.assertEqual(self.hidden_by_end_date_item.get_public_object().is_published, True)
         self.assertEqual(self.hidden_by_end_date_item.hidden_by_end_date, True)
         self.assertEqual(self.hidden_by_end_date_item.hidden_by_start_date, False)
         self.assertEqual(self.hidden_by_end_date_item.is_visible, False)
@@ -90,11 +106,30 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
 
         self.assertEqual(self.dirty_item.slug, "dirty")
         self.assertEqual(self.dirty_item.is_published, False)
+        self.assertEqual(self.dirty_item.get_public_object().is_published, True)
         self.assertEqual(self.dirty_item.hidden_by_end_date, False)
         self.assertEqual(self.dirty_item.hidden_by_start_date, False)
         self.assertEqual(self.dirty_item.is_visible, True)
         self.assertEqual(self.dirty_item.is_dirty, True)
         self.assertEqual(self.dirty_item_url, "/en/publisheritems/dirty/")
+
+        self.assertEqual(self.pending_publish_item.slug, "pending-publish-request")
+        self.assertEqual(self.pending_publish_item.is_published, False)
+        self.assertEqual(self.pending_publish_item.get_public_object(), None) # Not published
+        self.assertEqual(self.pending_publish_item.hidden_by_end_date, False)
+        self.assertEqual(self.pending_publish_item.hidden_by_start_date, False)
+        self.assertEqual(self.pending_publish_item.is_visible, False)
+        self.assertEqual(self.pending_publish_item.is_dirty, True)
+        self.assertEqual(self.pending_publish_item_url, "/en/publisheritems/pending-publish-request/")
+
+        self.assertEqual(self.pending_unpublish_item.slug, "pending-unpublish-request")
+        self.assertEqual(self.pending_unpublish_item.is_published, False) # It's the draft, not the published instance
+        self.assertEqual(self.pending_unpublish_item.get_public_object().is_published, True)
+        self.assertEqual(self.pending_unpublish_item.hidden_by_end_date, False)
+        self.assertEqual(self.pending_unpublish_item.hidden_by_start_date, False)
+        self.assertEqual(self.pending_unpublish_item.is_visible, True)
+        self.assertEqual(self.pending_unpublish_item.is_dirty, False)
+        self.assertEqual(self.pending_unpublish_item_url, "/en/publisheritems/pending-unpublish-request/")
 
         url = self.get_admin_change_url(obj=self.published_item)
         if django.VERSION < (1, 11):
@@ -259,8 +294,10 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
                 "hidden by start date", "Published, but hidden by start date.",
                 "Published Item", "Is public.",
                 "Not published Item", "Not published, yet",
+                "pending unpublish request", "is public",
+                "pending publish request", "not public",
 
-                "5 publisher items",
+                "7 publisher items",
             ),
             must_not_contain=(
                 "Error", "Traceback"
@@ -285,10 +322,17 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
             must_contain=(
                 "user 'editor'",
 
+                # Toolbar links:
+                "open requests",
+                "unpublish: pending unpublish request",
+                "publish: pending publish request",
+
+                # App content:
                 "Publisher List App - list view",
 
                 "/en/publisheritems/published-item/", "Published Item",
                 "/en/publisheritems/dirty/", "dirty",
+                "/en/publisheritems/pending-unpublish-request/", "pending unpublish request",
             ),
             must_not_contain=(
                 "/en/publisheritems/not-published-item", "Not published Item",
@@ -317,6 +361,12 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
             must_contain=(
                 "user 'editor'",
 
+                # Toolbar links:
+                "open requests",
+                "unpublish: pending unpublish request",
+                "publish: pending publish request",
+
+                # App content:
                 "Publisher List App - list view",
 
                 "/en/publisheritems/not-published-item", "Not published Item",
@@ -324,11 +374,14 @@ class PublisherItemAppTestCase(ClientBaseTestCase):
                 "/en/publisheritems/hidden-by-start-date", "hidden by start date",
                 "/en/publisheritems/hidden-by-end-date", "hidden by end date",
                 "/en/publisheritems/dirty", "This is dirty!",
+                "/en/publisheritems/pending-publish-request/", "pending publish request",
+                "/en/publisheritems/pending-unpublish-request/", "pending unpublish request",
             ),
             must_not_contain=(
                 "Error", "Traceback",
             ),
             status_code=200,
+            messages=[],
             template_name="list_app/list.html",
             html=False,
         )

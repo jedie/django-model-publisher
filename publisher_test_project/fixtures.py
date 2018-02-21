@@ -9,29 +9,19 @@ from django.contrib.contenttypes.models import ContentType
 from cms.models import Page, PagePermission
 
 from django_cms_tools.fixtures.pages import CmsPageCreator
-
 # https://github.com/jedie/django-tools
 from django_tools.permissions import get_filtered_permissions, pformat_permission
 from django_tools.unittest_utils.user import get_or_create_user_and_group
 
 from publisher import constants
 from publisher.models import PublisherStateModel
+from publisher_test_project.constants import EDITOR_GROUP, EDITOR_USER, REPORTER_GROUP, REPORTER_USER
 from publisher_test_project.publisher_list_app.fixtures import list_item_fixtures
 from publisher_test_project.publisher_list_app.models import PublisherItem
 from publisher_test_project.publisher_test_app.models import (PublisherParlerAutoSlugifyTestModel,
                                                               PublisherParlerTestModel, PublisherTestModel)
 
 log = logging.getLogger(__name__)
-
-
-# 'reporter' user can create un-/publish requests:
-REPORTER_USER="reporter"
-REPORTER_GROUP="reporters"
-
-# 'editor' user can accept/reject un-/publish requests:
-EDITOR_USER="editor"
-EDITOR_GROUP="editors"
-
 
 def get_permission(model, codename):
     content_type = ContentType.objects.get_for_model(model)

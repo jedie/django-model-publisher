@@ -11,6 +11,7 @@
 import datetime
 import logging
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone, translation
 from django.utils.translation import ugettext_lazy as _
 
@@ -19,6 +20,8 @@ from cms.models import CMSPlugin
 # https://github.com/jedie/django-cms-tools
 from django_cms_tools.fixtures.pages import CmsPageCreator
 
+from publisher.models import PublisherStateModel
+from publisher_test_project.constants import REPORTER_USER
 from publisher_test_project.publisher_list_app import constants
 from publisher_test_project.publisher_list_app.models import PublisherItem
 
@@ -47,6 +50,9 @@ def list_item_fixtures():
     log.info("Create %r CMS-Plugin...", constants.LIST_APPHOOK)
     PublisherItemPageCreator().create()
 
+    User = get_user_model()
+    ask_permission_user = User.objects.get(username=REPORTER_USER)
+
     language_code = "en"
     with translation.override(language_code):
         qs = PublisherItem.objects.all()
@@ -58,14 +64,12 @@ def list_item_fixtures():
 
         now = timezone.now()
 
-        for no in range(1, 6):
-            publish = True
+        for no in range(1, 8):
             publication_start_date = None
             publication_end_date = None
 
             if no == 1:
                 text = "Not published Item"
-                publish = False
             elif no == 2:
                 text = "Published Item"
             elif no == 3:
@@ -76,6 +80,10 @@ def list_item_fixtures():
                 publication_end_date = now - datetime.timedelta(days=1)
             elif no == 5:
                 text = "dirty"
+            elif no == 6:
+                text = "pending publish request"
+            elif no == 7:
+                text = "pending unpublish request"
             else:
                 raise RuntimeError
 
@@ -89,8 +97,19 @@ def list_item_fixtures():
                 },
             )
 
-            if publish:
+            if no not in (1, 6):
                 instance.publish()
+
+            if no == 6:
+                PublisherStateModel.objects.request_publishing(
+                    user=ask_permission_user,
+                    publisher_instance=instance,
+                )
+            elif no == 7:
+                PublisherStateModel.objects.request_unpublishing(
+                    user=ask_permission_user,
+                    publisher_instance=instance,
+                )
 
             if text == "dirty":
                 draft = instance.get_draft_object()

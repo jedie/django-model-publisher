@@ -27,7 +27,9 @@ class PublisherStateTests(ClientBaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        super(PublisherStateTests, cls).setUpTestData()
+        super().setUpTestData()
+
+        PublisherStateModel.objects.all().delete()
 
         PublisherTestModel.objects.all().delete() # FIXME
         cls.draft = PublisherTestModel.objects.create(no=1, title="publisher test")
