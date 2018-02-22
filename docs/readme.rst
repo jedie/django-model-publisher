@@ -248,6 +248,19 @@ For a complete fresh database, just remove the sqlite file, e.g.:
 Backwards-incompatible changes
 ------------------------------
 
+v0.7.0
+======
+
+``PublisherCmsViewMixin, PublisherCmsDetailView, PublisherCmsListView``
+
+moved from:
+
+``publisher.views``
+
+to:
+
+``publisher_cms.views``
+
 v0.6.0
 ======
 
@@ -267,7 +280,13 @@ Please read the information above.
 history
 -------
 
-* *dev* `compare v0.6.8...master <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master>`_
+* *dev* `compare v0.6.8...master <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master>`_ 
+
+    * Backwards-incompatible changes (see above)
+
+    * NEW: Add publish links to Django CMS toolbar in ``PublisherCmsDetailView``
+
+    * Change ``PublisherPageToolbar`` link text and add "page" to them (to differentiate them better from ``PublisherCmsDetailView`` links)
 
 * v0.6.9 - 01.02.2018 - `compare v0.6.8...v0.6.9 <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...v0.6.9>`_ 
 
