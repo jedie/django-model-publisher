@@ -147,6 +147,8 @@ Django compatibility
 +---------------------------+------------+----------------------+--------------------+
 | django-ya-model-publisher | django cms | django version       | python             |
 +===========================+============+======================+====================+
+| >=v0.6.x                  | 3.4.x      | 1.11                 | 3.5, 3.6           |
++---------------------------+------------+----------------------+--------------------+
 | >=v0.5.x                  | 3.4.x      | 1.8, 1.9, 1.10, 1.11 | 3.5, 3.6           |
 +---------------------------+------------+----------------------+--------------------+
 | v0.4.x                    | 3.4.x      | 1.8, 1.9, 1.10, 1.11 | 2.7, 3.4, 3.5, 3.6 |
@@ -280,9 +282,13 @@ Please read the information above.
 history
 -------
 
-* *dev* `compare v0.6.8...master <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.8...master>`_ 
+* *dev* `compare v0.7.0...master <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.7.0...master>`_
+
+* v0.7.0 - 22.02.2018 - `compare v0.6.9...v0.7.0 <https://github.com/wearehoods/django-ya-model-publisher/compare/v0.6.9...v0.7.0>`_ 
 
     * Backwards-incompatible changes (see above)
+
+    * Remove support for Django 1.8
 
     * NEW: Add publish links to Django CMS toolbar in ``PublisherCmsDetailView``
 
