@@ -266,8 +266,7 @@ setup(
     license="BSD",
     zip_safe=False,
     keywords='publisher django cms parler workflow model-publisher',
-    python_requires='>=2.7',
-    install_requires=["django>1.8"],
+    python_requires='>=3.5',
     classifiers=classifiers,
     cmdclass={
         'test': TestCommand,
